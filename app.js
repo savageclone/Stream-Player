@@ -27,9 +27,11 @@ const TYPES = {
 };
 
 let creds = store.get('creds', null);
-const base = () => creds.server.replace(/\/+$/, '');
+let demo = false; // true = use built-in sample data (see demo.js); nothing is saved
+const base = () => (creds && creds.server || '').replace(/\/+$/, '');
 
 async function api(action, params) {
+  if (demo) return window.DEMO_DATA.api(action, params);
   const q = new URLSearchParams(Object.assign({ username: creds.user, password: creds.pass }, action ? { action } : {}, params || {}));
   const ctl = new AbortController();
   const to = setTimeout(() => ctl.abort(), 45000);
@@ -41,9 +43,9 @@ async function api(action, params) {
 }
 
 const streamUrl = {
-  live:   (id, ext) => `${base()}/live/${creds.user}/${creds.pass}/${id}.${ext || 'm3u8'}`,
-  vod:    (id, ext) => `${base()}/movie/${creds.user}/${creds.pass}/${id}.${ext || 'mp4'}`,
-  series: (id, ext) => `${base()}/series/${creds.user}/${creds.pass}/${id}.${ext || 'mp4'}`
+  live:   (id, ext) => demo ? window.DEMO_DATA.streamUrl('live', id, ext) : `${base()}/live/${creds.user}/${creds.pass}/${id}.${ext || 'm3u8'}`,
+  vod:    (id, ext) => demo ? window.DEMO_DATA.streamUrl('vod', id, ext) : `${base()}/movie/${creds.user}/${creds.pass}/${id}.${ext || 'mp4'}`,
+  series: (id, ext) => demo ? window.DEMO_DATA.streamUrl('series', id, ext) : `${base()}/series/${creds.user}/${creds.pass}/${id}.${ext || 'mp4'}`
 };
 
 /* ---------- state ---------- */
@@ -135,13 +137,14 @@ async function doLogin(c) {
   const info = await api();
   if (!info || !info.user_info || Number(info.user_info.auth) !== 1) throw new Error('Login refused – check the details.');
   if (info.user_info.status && info.user_info.status !== 'Active') throw new Error('Account status: ' + info.user_info.status);
-  store.set('creds', creds);
+  if (!demo) store.set('creds', creds);
   const u = info.user_info; const exp = u.exp_date ? new Date(u.exp_date * 1000).toLocaleDateString() : '∞';
-  $('#account').innerHTML = esc(u.username) + '<br>Expires: ' + esc(exp) + ' · Connections: ' + esc(u.active_cons) + '/' + esc(u.max_connections);
+  $('#account').innerHTML = (demo ? '<span id="demoBadge">DEMO</span> ' : '') + esc(u.username) + '<br>Expires: ' + esc(exp) + ' · Connections: ' + esc(u.active_cons) + '/' + esc(u.max_connections);
 }
 $('#loginForm').addEventListener('submit', async e => {
   e.preventDefault();
   const msg = $('#loginMsg'); msg.style.color = '#8d99b3'; msg.textContent = 'Connecting…';
+  demo = false;
   try {
     await doLogin({ server: normServer($('#inServer').value), user: $('#inUser').value.trim(), pass: $('#inPass').value });
     S.cache = {};
@@ -152,7 +155,19 @@ $('#loginForm').addEventListener('submit', async e => {
   }
 });
 
+async function startDemo() {
+  const msg = $('#loginMsg');
+  if (!window.DEMO_DATA) { msg.textContent = 'Demo data is missing.'; return; }
+  demo = true;
+  try {
+    await doLogin({ server: 'http://demo.local', user: 'demo', pass: 'demo' });
+    S.cache = {}; S.tab = 'live';
+    enterHome();
+  } catch (err) { demo = false; creds = null; msg.textContent = err.message; }
+}
+
 function logout() {
+  demo = false;
   store.set('creds', null); creds = null; S.cache = {};
   $('#inPass').value = '';
   show('login'); focusFirst($('#login'));
@@ -240,6 +255,7 @@ function activate(el) {
   if (el.dataset.tab) { loadTab(el.dataset.tab); return; }
   if (el.id === 'btnRefresh') { loadTab(S.tab, true); return; }
   if (el.id === 'btnLogout') { logout(); return; }
+  if (el.id === 'btnDemo') { startDemo(); return; }
   if (el.classList.contains('card')) {
     const it = S.list[Number(el.dataset.i)]; if (!it) return;
     S.lastIdx = Number(el.dataset.i);

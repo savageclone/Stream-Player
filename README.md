@@ -2,6 +2,18 @@
 
 A remote-friendly Xtream Codes player (Live TV, Movies, Series) built as a plain webOS web app: no build step, no dependencies.
 
+## Try Demo
+
+The login screen has a **Try Demo** button. It loads made-up sample data (fake channels, movies and series, with generated placeholder artwork) so you can see how the app looks and behaves **without any provider account or real content**. Nothing is saved in demo mode.
+
+- All demo data lives in `demo.js`; the real code path is untouched.
+- Demo playback uses public sample streams: the Blender Foundation open movies (Big Buck Bunny, Sintel, Tears of Steel, Elephants Dream, CC-licensed) plus Mux and Apple HLS test streams. The TV needs internet access for the video to play.
+- Any resemblance of demo titles to real ones is coincidental; the app provides no content of its own.
+
+## Disclaimer
+
+This is a generic player for Xtream Codes-compatible servers. It ships with **no channels, playlists, accounts or media**, and is not affiliated with any IPTV provider. You are responsible for only using it with content you have the right to access.
+
 ## Install on your TV
 
 1. On the TV: install **Developer Mode** from the LG Content Store, open it, turn on *Dev Mode Status* and *Key Server*. Note the TV's IP and passphrase.
