@@ -1,0 +1,14 @@
+{
+  "id": "com.example.xtreamplayer",
+  "version": "1.0.3",
+  "vendor": "Example",
+  "type": "web",
+  "main": "index.html",
+  "title": "Xtream Player",
+  "icon": "icon.png",
+  "largeIcon": "largeIcon.png",
+  "bgColor": "#0b0f17",
+  "resolution": "1920x1080",
+  "disableBackHistoryAPI": true,
+  "uiRevision": 2
+}

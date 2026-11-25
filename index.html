@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920, initial-scale=1">
+<title>Xtream Player</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- LOGIN -->
+<section id="login" class="screen">
+  <form id="loginForm" autocomplete="off">
+    <h1>Xtream Player</h1>
+    <p class="sub">Sign in with your provider's details</p>
+    <label>Server URL
+      <input id="inServer" data-f type="text" placeholder="http://example.com:8080" inputmode="url">
+    </label>
+    <label>Username
+      <input id="inUser" data-f type="text">
+    </label>
+    <label>Password
+      <input id="inPass" data-f type="password">
+    </label>
+    <button id="btnLogin" data-f type="submit">Sign in</button>
+    <div id="loginMsg" class="msg"></div>
+  </form>
+</section>
+
+<!-- HOME -->
+<section id="home" class="screen hidden">
+  <header>
+    <nav id="tabs">
+      <button data-f data-tab="live">Live TV</button>
+      <button data-f data-tab="vod">Movies</button>
+      <button data-f data-tab="series">Series</button>
+      <input id="search" data-f type="text" placeholder="Search in this section" readonly>
+      <button data-f id="btnRefresh">Refresh</button>
+      <button data-f id="btnLogout">Log out</button>
+    </nav>
+    <div id="account"></div>
+  </header>
+  <main>
+    <aside id="cats"></aside>
+    <div id="grid"></div>
+  </main>
+  <footer>OK: open / play &nbsp;•&nbsp; Yellow: favourite &nbsp;•&nbsp; Blue: favourites tab &nbsp;•&nbsp; Green: jump to top &nbsp;•&nbsp; Back: go up a level</footer>
+  <div id="loading" class="loading hidden">Loading…</div>
+</section>
+
+<!-- DETAIL -->
+<section id="detail" class="screen hidden"></section>
+
+<!-- PLAYER -->
+<section id="player" class="hidden">
+  <video id="video" playsinline></video>
+  <div id="spinner" class="hidden">Buffering…</div>
+  <div id="osd" class="hidden">
+    <div id="osdTitle"></div>
+    <div id="osdSub"></div>
+    <div id="osdBar" class="hidden"><div id="osdFill"></div></div>
+    <div id="osdTime"></div>
+  </div>
+  <div id="playerErr" class="hidden"></div>
+</section>
+
+<div id="toast" class="hidden"></div>
+<script src="app.js"></script>
+</body>
+</html>
